@@ -80,6 +80,14 @@ $nama_pengguna = "Teman"; // Default, bisa disesuaikan jika Anda punya logika na
         .button.login:hover {
             background-color: #218838;
         }
+        /* New style for the Daftar button */
+        .button.daftar {
+            background-color: #ffc107; /* A yellow/orange color */
+            color: #333; /* Darker text for contrast */
+        }
+        .button.daftar:hover {
+            background-color: #e0a800; /* Darker yellow/orange on hover */
+        }
 
         /* Keyframe Animations */
         @keyframes fadeInRise {
@@ -98,6 +106,7 @@ $nama_pengguna = "Teman"; // Default, bisa disesuaikan jika Anda punya logika na
         <div class="button-group">
             <a href="#" class="button">Mulai Sekarang</a>
             <a href="login.php" class="button login">Login</a>
+            <a href="https://lumbungdata.com/signup.php" class="button daftar">Daftar</a>
         </div>
     </div>
 </body>
