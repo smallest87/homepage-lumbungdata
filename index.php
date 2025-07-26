@@ -80,13 +80,12 @@ $nama_pengguna = "Teman"; // Default, bisa disesuaikan jika Anda punya logika na
         .button.login:hover {
             background-color: #218838;
         }
-        /* New style for the Daftar button */
         .button.daftar {
-            background-color: #ffc107; /* A yellow/orange color */
-            color: #333; /* Darker text for contrast */
+            background-color: #ffc107;
+            color: #333;
         }
         .button.daftar:hover {
-            background-color: #e0a800; /* Darker yellow/orange on hover */
+            background-color: #e0a800;
         }
 
         /* Keyframe Animations */
@@ -104,7 +103,6 @@ $nama_pengguna = "Teman"; // Default, bisa disesuaikan jika Anda punya logika na
         <p>Selamat datang di website kami. Kami senang Anda ada di sini. Jelajahi berbagai fitur dan konten yang telah kami siapkan untuk Anda.</p>
 
         <div class="button-group">
-            <a href="#" class="button">Mulai Sekarang</a>
             <a href="login.php" class="button login">Login</a>
             <a href="https://lumbungdata.com/signup.php" class="button daftar">Daftar</a>
         </div>
