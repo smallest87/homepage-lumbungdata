@@ -8,8 +8,9 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     exit();
 }
 
-// Ambil username dari sesi
-$username = $_SESSION['username'] ?? 'Pengguna'; // Default jika username tidak ada di sesi
+// Ambil user_publicname dari sesi
+$user_publicname = $_SESSION['user_publicname'] ?? 'Pengguna'; // Mengambil dari sesi, default 'Pengguna'
+// $username = $_SESSION['username'] ?? 'Pengguna'; // Baris ini tidak lagi digunakan
 ?>
 
 <!DOCTYPE html>
@@ -83,8 +84,7 @@ $username = $_SESSION['username'] ?? 'Pengguna'; // Default jika username tidak 
 </head>
 <body>
     <div class="dashboard-container">
-        <h1>Selamat Datang, <?php echo htmlspecialchars($username); ?>!</h1>
-        <p>Anda telah berhasil masuk ke dashboard. Di sini Anda dapat menemukan fitur-fitur dan informasi penting.</p>
+        <h1>Selamat Datang, <?php echo htmlspecialchars($user_publicname); ?>!</h1> <p>Anda telah berhasil masuk ke dashboard. Di sini Anda dapat menemukan fitur-fitur dan informasi penting.</p>
         <p>Ini adalah area yang dilindungi dan hanya dapat diakses setelah login berhasil.</p>
         <a href="logout.php" class="logout-button">Logout</a>
     </div>
