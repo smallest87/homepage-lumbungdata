@@ -1,14 +1,79 @@
+<?php
+session_start(); // Mulai sesi PHP
+
+// Variabel untuk pesan error login
+$pesan_error = '';
+$user_email_input = $_POST['user_email'] ?? '';
+$password_input = $_POST['password'] ?? '';
+
+// Jika sudah login, langsung arahkan ke dashboard
+if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
+    header('Location: dashboard.php');
+    exit();
+}
+
+// Hanya proses jika form disubmit
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Validasi input dasar
+    if (empty($user_email_input) || empty($password_input)) {
+        $pesan_error = 'Email dan password wajib diisi.';
+    } else {
+        // Data yang akan dikirim ke API
+        $data = [
+            'user_email' => $user_email_input,
+            'user_pass' => $password_input,
+        ];
+
+        $api_url = 'https://api.lumbungdata.com/login'; // Endpoint API untuk login
+
+        $ch = curl_init($api_url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+
+        $response = curl_exec($ch);
+        $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curl_error = curl_error($ch);
+        $curl_errno = curl_errno($ch);
+        curl_close($ch);
+
+        if ($response === false) {
+            $pesan_error = "Kesalahan koneksi API: " . htmlspecialchars($curl_error) . " (Kode: {$curl_errno})";
+        } else {
+            $response_data = json_decode($response);
+
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                $pesan_error = "Gagal memproses respons API: Data bukan JSON valid. Pesan: " . json_last_error_msg();
+            } else {
+                if ($http_code == 200) { // 200 OK untuk sukses login
+                    $_SESSION['logged_in'] = true;
+                    $_SESSION['user_email'] = $response_data->user_email ?? $user_email_input;
+                    $_SESSION['jwt_token'] = $response_data->jwt ?? null;
+                    $_SESSION['user_id'] = $response_data->user_id ?? null; // Jika API mengembalikan user ID
+                    $_SESSION['username'] = $response_data->user_publicname ?? 'Pengguna'; // Simpan public name dari API untuk dashboard
+
+                    header('Location: dashboard.php');
+                    exit();
+                } else {
+                    $pesan_error = htmlspecialchars($response_data->message ?? 'Email atau password salah.');
+                }
+            }
+        }
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LumbungData - Login</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <title>LumbungData - Login</title> <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Variabel Warna Baru */
+        /* Variabel Warna */
         :root {
             --primary-blue: #87CEEB; /* Biru langit (Sky Blue) */
             --dark-brown: #4A2B13; /* Cokelat gelap untuk aksen utama dan teks */
@@ -19,6 +84,7 @@
             --shadow-light: rgba(0, 0, 0, 0.08);
             --shadow-medium: rgba(0, 0, 0, 0.15); /* Sedikit lebih kuat untuk kontras dengan cokelat */
             --accent-line: rgba(74, 43, 19, 0.1); /* Garis dekorasi cokelat transparan */
+            --error-red: #D32F2F; /* Warna merah untuk pesan error */
         }
 
         /* General Body Styling */
@@ -94,7 +160,7 @@
             flex: 1;
             max-width: 380px;
             background-color: var(--white);
-            padding: 40px;
+            padding: 40px; /* Padding lebih besar untuk kesan lapang */
             border-radius: 12px;
             box-shadow: 0 8px 25px var(--shadow-medium); /* Bayangan lebih jelas */
             display: flex;
@@ -115,13 +181,23 @@
         /* Form Elements */
         .form-group {
             margin-bottom: 15px;
-            position: relative; /* Untuk garis dekorasi input */
+            position: relative;
+            text-align: left; /* Pastikan label dan input rata kiri */
         }
 
-        .form-group input[type="text"],
-        .form-group input[type="password"] {
-            width: calc(100% - 24px);
-            padding: 12px 12px;
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+            color: var(--dark-brown); /* Warna label cokelat gelap */
+            font-weight: 500;
+        }
+
+        .form-group input[type="email"],
+        .form-group input[type="password"],
+        .form-group input[type="text"] { /* Tambahkan type text untuk placeholder "Email atau Nama Pengguna" */
+            width: calc(100% - 24px); /* Kurangi padding */
+            padding: 12px 12px; /* Padding seragam */
             border: 1px solid var(--border-light);
             border-radius: 8px;
             font-size: 1.05rem;
@@ -129,33 +205,13 @@
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
-        .form-group input[type="text"]:focus,
-        .form-group input[type="password"]:focus {
+        .form-group input[type="email"]:focus,
+        .form-group input[type="password"]:focus,
+        .form-group input[type="text"]:focus {
             border-color: var(--primary-blue); /* Border fokus biru langit */
             box-shadow: 0 0 0 3px rgba(135, 206, 235, 0.3); /* Glow biru langit */
             outline: none;
         }
-
-        /* Garis Dekorasi Bawah Input (opsional) */
-        .form-group input {
-            position: relative;
-            z-index: 2; /* Di atas garis dekorasi jika ada */
-        }
-        /* .form-group::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 1px;
-            background-color: var(--border-light);
-            transition: background-color 0.3s ease;
-            z-index: 1;
-        } */
-        /* .form-group input:focus + ::after {
-            background-color: var(--primary-blue);
-        } */
-
 
         .button {
             width: 100%;
@@ -191,7 +247,7 @@
 
         .link-text a:hover {
             text-decoration: underline;
-            color: #6CB9DA; /* Biru langit lebih gelap saat hover */
+            color: #6CB9DA;
         }
 
         .separator {
@@ -203,8 +259,8 @@
             display: block;
             width: fit-content;
             padding: 12px 25px;
-            background-color: var(--dark-brown); /* Tombol sekunder cokelat gelap */
-            color: var(--white); /* Teks putih untuk kontras */
+            background-color: var(--dark-brown);
+            color: var(--white);
             border: none;
             border-radius: 8px;
             font-size: 1rem;
@@ -213,13 +269,21 @@
             transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
             text-decoration: none;
             margin: 0 auto;
-            box-shadow: 0 4px 10px rgba(74, 43, 19, 0.2); /* Bayangan cokelat gelap */
+            box-shadow: 0 4px 10px rgba(74, 43, 19, 0.2);
         }
 
         .create-account-button:hover {
-            background-color: #3A220F; /* Cokelat gelap lebih gelap saat hover */
+            background-color: #3A220F;
             transform: translateY(-1px);
             box-shadow: 0 6px 15px rgba(74, 43, 19, 0.3);
+        }
+
+        .error-message { /* Styling untuk pesan error */
+            color: var(--error-red);
+            margin-bottom: 15px;
+            font-size: 0.95em;
+            font-weight: 500;
+            text-align: center;
         }
 
         /* Responsiveness */
@@ -285,12 +349,16 @@
 
         <div class="right-section">
             <h2 class="form-title">Login ke Akun Anda</h2>
-            <form class="login-form">
-                <div class="form-group">
-                    <input type="text" id="email" placeholder="Email atau Nama Pengguna" required>
+            <?php if ($pesan_error): ?>
+                <p class="error-message"><?php echo htmlspecialchars($pesan_error); ?></p>
+            <?php endif; ?>
+            <form action="index.php" method="POST"> <div class="form-group">
+                    <label for="user_email">Email atau Nama Pengguna:</label>
+                    <input type="text" id="user_email" name="user_email" value="<?php echo htmlspecialchars($user_email_input); ?>" placeholder="Masukkan email atau nama pengguna Anda" required>
                 </div>
                 <div class="form-group">
-                    <input type="password" id="password" placeholder="Kata Sandi" required>
+                    <label for="password">Kata Sandi:</label>
+                    <input type="password" id="password" name="password" placeholder="Masukkan kata sandi Anda" required>
                 </div>
                 <button type="submit" class="button">Masuk</button>
             </form>
