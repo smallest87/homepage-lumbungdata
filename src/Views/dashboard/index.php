@@ -1,9 +1,21 @@
+<?php
+// views/layout/base.php
+
+// Variabel seperti $pageTitle, $user_publicname, $articles, dll.
+// diharapkan sudah didefinisikan di controller dan tersedia di sini.
+
+// Pastikan jalur ke partials sudah benar relatif terhadap lokasi base.php
+$partialsPath = __DIR__ . '/../partials/'; // Mengasumsikan partials satu level di atas layout
+
+// Set default page title jika tidak disediakan
+$pageTitle = $pageTitle ?? 'Aplikasi Elegan';
+?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Elegan</title>
+    <title><?php echo htmlspecialchars($pageTitle); ?></title>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         /* ======================================================= */
@@ -519,157 +531,34 @@
     </style>
 </head>
 <body>
-    <div class="header-top">
-        <div class="header-left">
-            <a href="#" class="logo">SitusKu.id</a>
-        </div>
-
-        <div class="header-center-nav">
-            <a href="#" class="nav-item">
-                <span class="icon">&#127968;</span> Beranda
-            </a>
-            <a href="#" class="nav-item">
-                <span class="icon">&#128193;</span> Arsip
-            </a>
-            <a href="#" class="nav-item">
-                <span class="icon">&#128226;</span> Pemberitahuan
-            </a>
-            <a href="#" class="nav-item">
-                <span class="icon">&#128100;</span> Profil
-            </a>
-        </div>
-
-        <div class="header-right-actions">
-            <a href="#" class="action-icon-button" title="Tambah Data">
-                &#x2795; </a>
-            <a href="#" class="action-icon-button" title="Edit Pengguna">
-                &#x270E; </a>
-            <a href="#" class="action-icon-button" title="Pengaturan Sistem">
-                &#x2699; </a>
-            <a href="/logout" class="logout-button">Logout</a>
-        </div>
-    </div>
+    <?php include $partialsPath . 'header.php'; ?>
 
     <div class="main-layout-wrapper">
-        <div class="left-sidebar">
-            <a href="#" class="sidebar-profile">
-                <img src="https://via.placeholder.com/36x36" alt="Julian Sukrisna Susilo" class="profile-pic">
-                <span class="profile-name">Julian Sukrisna Susilo</span>
-            </a>
-            <hr> <ul>
-                <li>
-                    <a href="#">
-                        <span class="icon">&#128373;&#xFE0E;</span> Meta AI
-                    </a>
-                </li>
-                <li>
-                    <a href="#">
-                        <span class="icon">&#128101;</span> Teman
-                    </a>
-                </li>
-                <li>
-                    <a href="#">
-                        <span class="icon">&#128200;</span> Dasbor profesional
-                    </a>
-                </li>
-                <li>
-                    <a href="#">
-                        <span class="icon">&#128196;</span> Kabar
-                    </a>
-                </li>
-                <li>
-                    <a href="#">
-                        <span class="icon">&#128101;</span> Grup
-                    </a>
-                </li>
-                <li>
-                    <a href="#">
-                        <span class="icon">&#128717;</span> Marketplace
-                    </a>
-                </li>
-            </ul>
-
-            <a href="#" class="see-more-toggle">
-                <span class="arrow-icon">&#9662;</span> Lihat selengkapnya
-            </a>
-
-            <hr> <h2 style="padding: 0 20px; font-size: 1em; font-weight: 600; text-align: left; color: #8a8d91; margin-bottom: 15px;">Pintasan Anda</h2>
-            <ul>
-                <li>
-                    <a href="#">
-                        <span class="icon">&#127828;</span> Warung Bu Parti
-                    </a>
-                </li>
-                <li>
-                    <a href="#">
-                        <span class="icon">&#127912;</span> Malang Art Channel
-                    </a>
-                </li>
-            </ul>
-
-        </div>
+        <?php include $partialsPath . 'sidebar_left.php'; ?>
 
         <div class="main-content-area">
             <h1>Tren Artikel Terbaru</h1>
             <div class="article-cards-container">
-                <div class="article-card">
-                    <h3>Pentingnya Privasi Data di Era Digital</h3>
-                    <span class="date">27 Juli 2025</span>
-                    <p>Dalam lanskap digital yang terus berkembang, privasi data menjadi semakin krusial. Artikel ini membahas mengapa melindungi informasi pribadi Anda adalah prioritas utama dan bagaimana organisasi berupaya menjaga keamanan data pengguna...</p>
-                    <a href="#" class="read-more">Baca Selengkapnya &raquo;</a>
-                </div>
+                <?php
+                // Contoh data artikel (ini biasanya datang dari Controller/Model)
+                $articles = [
+                    ['title' => 'Pentingnya Privasi Data di Era Digital', 'date' => '27 Juli 2025', 'excerpt' => 'Dalam lanskap digital yang terus berkembang, privasi data menjadi semakin krusial. Artikel ini membahas mengapa melindungi informasi pribadi Anda adalah prioritas utama dan bagaimana organisasi berupaya menjaga keamanan data pengguna...'],
+                    ['title' => 'Tren Teknologi Terbaru yang Wajib Anda Ketahui', 'date' => '25 Juli 2025', 'excerpt' => 'Dari kecerdasan buatan hingga komputasi kuantum, dunia teknologi tidak pernah berhenti berinovasi. Mari kita selami beberapa tren paling menarik yang akan membentuk masa depan kita...'],
+                    ['title' => 'Memulai Karir di Industri Kreatif: Panduan Lengkap', 'date' => '24 Juli 2025', 'excerpt' => 'Industri kreatif menawarkan peluang tak terbatas bagi mereka yang bersemangat. Pelajari langkah-langkah esensial untuk membangun portofolio, menemukan mentor, dan berhasil di bidang ini...'],
+                    ['title' => 'Tips Efektif Mengelola Waktu untuk Produktivitas Maksimal', 'date' => '23 Juli 2025', 'excerpt' => 'Merasa kewalahan dengan daftar tugas? Temukan strategi pengelolaan waktu yang telah terbukti untuk meningkatkan efisiensi Anda dan mencapai tujuan pribadi dan profesional Anda...'],
+                    ['title' => 'Dampak Perubahan Iklim pada Ekosistem Lokal', 'date' => '22 Juli 2025', 'excerpt' => 'Perubahan iklim bukan lagi ancaman di masa depan, melainkan kenyataan yang memengaruhi ekosistem di seluruh dunia. Artikel ini menyoroti dampak spesifik pada flora dan fauna lokal serta upaya konservasi...'],
+                    ['title' => 'Investasi Saham untuk Pemula: Apa yang Perlu Anda Tahu', 'date' => '21 Juli 2025', 'excerpt' => 'Memasuki dunia investasi bisa menakutkan, tetapi dengan pemahaman dasar yang tepat, Anda bisa memulai perjalanan finansial Anda. Pelajari istilah kunci dan strategi awal di pasar saham...'],
+                ];
 
-                <div class="article-card">
-                    <h3>Tren Teknologi Terbaru yang Wajib Anda Ketahui</h3>
-                    <span class="date">25 Juli 2025</span>
-                    <p>Dari kecerdasan buatan hingga komputasi kuantum, dunia teknologi tidak pernah berhenti berinovasi. Mari kita selami beberapa tren paling menarik yang akan membentuk masa depan kita...</p>
-                    <a href="#" class="read-more">Baca Selengkapnya &raquo;</a>
-                </div>
-
-                <div class="article-card">
-                    <h3>Memulai Karir di Industri Kreatif: Panduan Lengkap</h3>
-                    <span class="date">24 Juli 2025</span>
-                    <p>Industri kreatif menawarkan peluang tak terbatas bagi mereka yang bersemangat. Pelajari langkah-langkah esensial untuk membangun portofolio, menemukan mentor, dan berhasil di bidang ini...</p>
-                    <a href="#" class="read-more">Baca Selengkapnya &raquo;</a>
-                </div>
-
-                <div class="article-card">
-                    <h3>Tips Efektif Mengelola Waktu untuk Produktivitas Maksimal</h3>
-                    <span class="date">23 Juli 2025</span>
-                    <p>Merasa kewalahan dengan daftar tugas? Temukan strategi pengelolaan waktu yang telah terbukti untuk meningkatkan efisiensi Anda dan mencapai tujuan pribadi dan profesional Anda...</p>
-                    <a href="#" class="read-more">Baca Selengkapnya &raquo;</a>
-                </div>
-
-                 <div class="article-card">
-                    <h3>Dampak Perubahan Iklim pada Ekosistem Lokal</h3>
-                    <span class="date">22 Juli 2025</span>
-                    <p>Perubahan iklim bukan lagi ancaman di masa depan, melainkan kenyataan yang memengaruhi ekosistem di seluruh dunia. Artikel ini menyoroti dampak spesifik pada flora dan fauna lokal serta upaya konservasi...</p>
-                    <a href="#" class="read-more">Baca Selengkapnya &raquo;</a>
-                </div>
-
-                <div class="article-card">
-                    <h3>Investasi Saham untuk Pemula: Apa yang Perlu Anda Tahu</h3>
-                    <span class="date">21 Juli 2025</span>
-                    <p>Memasuki dunia investasi bisa menakutkan, tetapi dengan pemahaman dasar yang tepat, Anda bisa memulai perjalanan finansial Anda. Pelajari istilah kunci dan strategi awal di pasar saham...</p>
-                    <a href="#" class="read-more">Baca Selengkapnya &raquo;</a>
-                </div>
+                foreach ($articles as $article) {
+                    include $partialsPath . 'article_card.php';
+                }
+                ?>
 
             </div>
         </div>
 
-        <div class="right-sidebar">
-            <h2>Topik Populer</h2>
-            <ul>
-                <li><a href="#"><span class="icon">&#128172;</span> Berita Terbaru</a></li>
-                <li><a href="#"><span class="icon">&#128218;</span> Artikel Terpopuler</a></li>
-                <li><a href="#"><span class="icon">&#128188;</span> Karir & Pekerjaan</a></li>
-                <li><a href="#"><span class="icon">&#128161;</span> Tips & Trik</a></li>
-                <li><a href="#"><span class="icon">&#128240;</span> Teknologi</a></li>
-                <li><a href="#"><span class="icon">&#127760;</span> Lingkungan</a></li>
-                <li><a href="#"><span class="icon">&#127918;</span> Hiburan</a></li>
-                <li><a href="#"><span class="icon">&#128200;</span> Ekonomi</a></li>
-            </ul>
-        </div>
+        <?php include $partialsPath . 'sidebar_right.php'; ?>
     </div>
 </body>
 </html>
