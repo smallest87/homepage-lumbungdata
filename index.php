@@ -18,21 +18,13 @@ use App\Controllers\DashboardController;
 $router = new Router();
 
 // Define Routes
-// GET request for the login form
 $router->addRoute('GET', '/', ['AuthController', 'showLogin']);
+$router->addRoute('GET', '/signup', ['AuthController', 'showSignup']);
+$router->addRoute('GET', '/dashboard', ['DashboardController', 'index']);
+$router->addRoute('GET', '/logout', ['AuthController', 'handleLogout']);
 // POST request for submitting login form
 $router->addRoute('POST', '/', ['AuthController', 'handleLogin']);
-
-// GET request for the signup form
-$router->addRoute('GET', '/signup', ['AuthController', 'showSignup']);
-// POST request for submitting signup form
 $router->addRoute('POST', '/signup', ['AuthController', 'handleSignup']);
-
-// GET request for the dashboard page
-$router->addRoute('GET', '/dashboard', ['DashboardController', 'index']);
-
-// GET request for logout
-$router->addRoute('GET', '/logout', ['AuthController', 'handleLogout']);
 
 // Dispatch the request
 $router->dispatch();
