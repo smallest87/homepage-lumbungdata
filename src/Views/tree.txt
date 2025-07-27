@@ -1,0 +1,12 @@
+Folder PATH listing for volume DATA 2
+Volume serial number is 082B-BF30
+G:.
+|   tree.txt
+|   
++---auth
+|       login.php
+|       signup.php
+|       
+\---dashboard
+        index.php
+        
